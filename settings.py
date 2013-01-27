@@ -118,7 +118,7 @@ class Settings(QtCore.QObject):
         self.config.setValue('runOnStartup', runOnStartup)
         if not self._startupLinkExists() == runOnStartup:
             path = os.path.expanduser(
-                    '~/Start Menu/Programs/Startup/webprint.lnk')
+                    '~/Start Menu/Programs/Startup/Web Print Tray Icon.lnk')
             if runOnStartup:
                 #Platform Dependant: Windows
                 targetPath = os.path.abspath(sys.argv[0])
@@ -154,7 +154,7 @@ class Settings(QtCore.QObject):
         """
         #Platform Dependant: Windows
         return os.path.isfile(os.path.expanduser(
-                            '~/Start Menu/Programs/Startup/webprint.lnk'))
+                            '~/Start Menu/Programs/Startup/Web Print Tray Icon.lnk'))
 
     def _createShortcut(self, path, target='', wDir='', icon=''):
         """Creates a shortcut in windows.

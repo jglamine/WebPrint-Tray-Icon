@@ -44,9 +44,9 @@ class TrayIcon(QtGui.QSystemTrayIcon):
     def updateToolTip(self):
         pendingJobs = self.printer.pendingJobsCount()
         if pendingJobs == 1:
-            self.setToolTip("1 Document Pending - WebprintFolder")
+            self.setToolTip("1 Document Pending - WebPrint")
         else:
-            self.setToolTip("%d Documents Pending - WebprintFolder" %
+            self.setToolTip("%d Documents Pending - WebPrint" %
                         pendingJobs)
 
     def showSettingsWindow(self):
@@ -233,7 +233,7 @@ class TrayIcon(QtGui.QSystemTrayIcon):
 
     @pyqtSlot()
     def openHelp(self):
-        url = QUrl('file:///' + os.path.abspath('..\\help.html'), QUrl.TolerantMode)
+        url = QUrl('https://github.com/jglamine/WebPrint-Tray-Icon#webprint-tray-icon', QUrl.TolerantMode)
         QDesktopServices.openUrl(url)
 
 
