@@ -10,7 +10,7 @@ WARNING: Files in the 'webprint' folder will be deleted after printing.
 Download
 --------
 A Windows installer can be downloaded from Source Forge:  
-https://sourceforge.net/projects/webprinttrayico/files/  
+https://sourceforge.net/projects/webprinttrayico/files/latest/download  
 At this time, OSX and Linux are not supported.  
 Setup
 -----
