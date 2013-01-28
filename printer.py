@@ -74,7 +74,7 @@ class ThreadedPrinter(QtCore.QObject):
         'printerName':printerName}
         if not settings.getHasValidCredentials():
             self.jobNeedsLogin.emit(job['filename'], job['printerName'])
-            self.deleteJobFile(job['filename'], job['printerName'])
+            self._queueJobForLogin(job)
         elif not self.sessionExpired:
             self.runningJobs[(job['filename'], job['printerName'])] = job
             self._printFile(filepath, printerName)
@@ -83,14 +83,17 @@ class ThreadedPrinter(QtCore.QObject):
             #sign in and then try to resubmit the job
             self.loginAndPrint(job)
 
-    def loginAndPrint(self, job):
-        """Attempts to sign in and print a job.
-        Deletes the job if sign in fails.
-        """
+    def _queueJobForLogin(self, job):
         self.savedJobs.append(job)
         self.updateToolTip.emit()
         self.loginComplete.connect(self.runSavedJobs)
         self.loginFailed.connect(self.failSavedJobs)
+
+    def loginAndPrint(self, job):
+        """Attempts to sign in and print a job.
+        Deletes the job if sign in fails.
+        """
+        self._queueJobForLogin(job)
         self.login()
 
     def runSavedJobs(self):
@@ -109,11 +112,11 @@ class ThreadedPrinter(QtCore.QObject):
         self.loginFailed.disconnect(self.failSavedJobs)
         self.updateToolTip.emit()
 
-    def deleteJobFile(filename, printerName):
+    def deleteJobFile(self, filename, printerName):
+        settings = Settings()
         try:
-            os.remove(os.path.join(os.path.join(
-                      Settings().getWebprintFolder(),
-                      str(printer)), str(filename)))
+            path = os.path.join(settings.getWebprintFolder(), printerName, filename)
+            os.remove(path)
         except:
             pass
 
@@ -249,10 +252,13 @@ class ThreadedPrinter(QtCore.QObject):
     def _onMonitorJobFailed(self, filename, printerName, errorCode):
         #if errorCode == 'JobIdNotFound' or errorCode == 'ConnectionError':
         #don't call _onError
-        #ignore this error, it only happens if you sleep the computer
+        #ignore this error, it usually only happens if you sleep the computer
         # in the middle of monitoring a job. The job probably printed fine.
-        print 'Job ID not found, assume job finished.'
-        del self.runningJobs[(str(filename), str(printerName))]
+
+        filename = str(filename)
+        printerName = str(printerName)
+        self.deleteJobFile(filename, printerName)
+        del self.runningJobs[filename, printerName]
         self.updateToolTip.emit()
         self._onError(errorCode)
 
@@ -451,7 +457,6 @@ class _MonitorJobTask(QtCore.QRunnable):
         except papercut.JobIdNotFound:
             self.failed.emit(self.filename, self.printerName, 'JobIdNotFound')
         except ConnectionError: #handled
-            print 'connection error'
             self.failed.emit(self.filename, self.printerName, 'ConnectionError')
         except Exception as e:
             self.failed.emit(self.filename, self.printerName, str(e))

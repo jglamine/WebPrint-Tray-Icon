@@ -74,7 +74,7 @@ class TrayIcon(QtGui.QSystemTrayIcon):
     def initPrinter(self):
         settings = Settings()
         self.printer = ThreadedPrinter(url=settings.getWebprintUrl(),
-                                       test=False, parent=self) #TODO: set test to False
+                                       test=False, parent=self)
         self.printer.loginComplete.connect(self.onLogin)
         self.printer.loginFailed.connect(self.onLoginFailed)
         self.printer.jobAdded.connect(self.onJobAdded)
