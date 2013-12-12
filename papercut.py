@@ -118,7 +118,7 @@ def printFile(filename, printerName, sessionId, numCopies=1, url=URL,
             payload = { 'service': 'direct/1/UserWebPrintUpload/$Form$0',
                         'sp': 'S1', 'Form1': ''}
             response = requests.post(url + '/app', data=payload, cookies=cookies)
-            response.raise_for_status
+            response.raise_for_status()
             match = re.search(r'var webPrintUID = \'(.*)\';', response.text)
             if match is None:
                 raise UnexpectedResponse
